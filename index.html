@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Editor Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 340px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .editor-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Ensure content stays within bounds */
+        }
+
+        .editor-section h3 {
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .color-input {
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .range-input {
+            background: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .file-input {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-input input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: #764ba2;
+        }
+
+        .preview-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            background: white;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .empty-state p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .selected-element {
+            outline: 3px solid #667eea !important;
+            outline-offset: 2px;
+            position: relative;
+        }
+
+        .element-info {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 10;
+        }
+
+        .element-details {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .element-details h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .element-details p {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .code-section {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .code-section h5 {
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .content-field {
+            margin-bottom: 10px;
+        }
+
+        .content-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            margin: 0;
+            padding: 8px 12px;
+            font-size: 12px;
+            min-width: 0;
+            white-space: nowrap;
+        }
+
+        /* Animation classes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+            from { opacity: 0; transform: scale(0.3); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-90deg); }
+            to { opacity: 1; transform: rotate(0deg); }
+        }
+
+        .animation-fadeIn { animation: fadeIn 1s ease-out; }
+        .animation-fadeInUp { animation: fadeInUp 1s ease-out; }
+        .animation-slideInUp { animation: slideInUp 1s ease-out; }
+        .animation-bounceIn { animation: bounceIn 1s ease-out; }
+        .animation-slideInLeft { animation: slideInLeft 1s ease-out; }
+        .animation-slideInRight { animation: slideInRight 1s ease-out; }
+        .animation-pulse { animation: pulse 2s infinite; }
+        .animation-rotateIn { animation: rotateIn 1s ease-out; }
+
+        .element-toolbar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .element-counter {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <div class="sidebar">
+            <h2>Portfolio Editor</h2>
+            
+            <div class="editor-section">
+                <h3>Import Content</h3>
+                <div class="form-group">
+                    <label class="file-input">
+                        <input type="file" id="fileInput" accept=".html,.htm" onchange="loadFile(event)">
+                        <span class="file-input-label">Upload HTML File</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Or paste HTML code:</label>
+                    <textarea id="htmlInput" rows="4" placeholder="Paste your HTML content here..."></textarea>
+                </div>
+                <button class="btn" onclick="loadFromInput()">Load Content</button>
+                <button class="btn btn-secondary" onclick="clearContent()">Clear All</button>
+            </div>
+
+            <div class="editor-section" id="elementSelection" style="display: none;">
+                <h3>Element Selection</h3>
+                <div class="form-group">
+                    <label>Select Element:</label>
+                    <select id="elementSelector" onchange="selectElement()">
+                        <option value="">Choose an element...</option>
+                    </select>
+                </div>
+                <div class="element-counter" id="elementCounter"></div>
+                
+                <div id="elementDetails" style="display: none;">
+                    <div class="element-details">
+                        <h4>Element Information</h4>
+                        <p><strong>Tag:</strong> <span id="elementTag"></span></p>
+                        <p><strong>ID:</strong> <span id="elementId"></span></p>
+                        <p><strong>Classes:</strong> <span id="elementClasses"></span></p>
+                        <p><strong>Path:</strong> <span id="elementPath"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-section" id="contentEditor" style="display: none;">
+                <h3>Content Editor</h3>
+                <div id="contentFields"></div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="updateElementContent()">Update Code</button>
+                    <button class="btn btn-warning" onclick="duplicateElement()">Duplicate</button>
+                    <button class="btn btn-danger" onclick="deleteElement()">Delete</button>
+                </div>
+            </div>
+
+            <div class="editor-section" id="codeViewer" style="display: none;">
+                <h3>Code Tracking</h3>
+                <div id="htmlCode" class="code-section">
+                    <h5>HTML Structure</h5>
+                    <pre id="htmlCodeContent"></pre>
+                </div>
+                <div id="cssCode" class="code-section">
+                    <h5>CSS Styles</h5>
+                    <pre id="cssCodeContent"></pre>
+                </div>
+                <div id="jsCode" class="code-section">
+                    <h5>JavaScript Events</h5>
+                    <pre id="jsCodeContent"></pre>
+                </div>
+            </div>
+
+            <div class="editor-section" id="styleEditor" style="display: none;">
+                <h3>Typography</h3>
+                <div class="form-group">
+                    <label>Font Size:</label>
+                    <input type="range" id="fontSize" min="8" max="120" value="16" class="range-input">
+                    <span id="fontSizeValue">16px</span>
+                </div>
+                <div class="form-group">
+                    <label>Font Weight:</label>
+                    <select id="fontWeight">
+                        <option value="100">Thin</option>
+                        <option value="300">Light</option>
+                        <option value="400">Normal</option>
+                        <option value="500">Medium</option>
+                        <option value="600">Semi-Bold</option>
+                        <option value="700">Bold</option>
+                        <option value="800">Extra Bold</option>
+                        <option value="900">Black</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Text Align:</label>
+                    <select id="textAlign">
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                        <option value="justify">Justify</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="updateTypography()">Apply Typography</button>
+            </div>
+
+            <div class="editor-section" id="colorEditor" style="display: none;">
+                <h3>Colors</h3>
+                <div class="form-group">
+                    <label>Text Color:</label>
+                    <input type="color" id="textColor" class="color-input" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label>Background Color:</label>
+                    <input type="color" id="backgroundColor" class="color-input" value="#ffffff">
+                </div>
+                <div class="form-group">
+                    <label>Border Color:</label>
+                    <input type="color" id="borderColor" class="color-input" value="#cccccc">
+                </div>
+                <div class="form-group">
+                    <label>Border Width:</label>
+                    <input type="range" id="borderWidth" min="0" max="10" value="0" class="range-input">
+                    <span id="borderWidthValue">0px</span>
+                </div>
+                <button class="btn" onclick="updateColors()">Apply Colors</button>
+            </div>
+
+            <div class="editor-section" id="layoutEditor" style="display: none;">
+                <h3>Spacing & Layout</h3>
+                <div class="form-group">
+                    <label>Margin:</label>
+                    <input type="range" id="margin" min="0" max="100" value="0" class="range-input">
+                    <span id="marginValue">0px</span>
+                </div>
+                <div class="form-group">
+                    <label>Padding:</label>
+                    <input type="range" id="padding" min="0" max="100" value="0" class="range-input">
+                    <span id="paddingValue">0px</span>
+                </div>
+                <div class="form-group">
+                    <label>Border Radius:</label>
+                    <input type="range" id="borderRadius" min="0" max="50" value="0" class="range-input">
+                    <span id="borderRadiusValue">0px</span>
+                </div>
+                <div class="form-group">
+                    <label>Width:</label>
+                    <input type="range" id="width" min="10" max="100" value="100" class="range-input">
+                    <span id="widthValue">100%</span>
+                </div>
+                <div class="form-group">
+                    <label>Display:</label>
+                    <select id="display">
+                        <option value="block">Block</option>
+                        <option value="inline">Inline</option>
+                        <option value="inline-block">Inline Block</option>
+                        <option value="flex">Flex</option>
+                        <option value="grid">Grid</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="updateLayout()">Apply Layout</button>
+            </div>
+
+            <div class="editor-section" id="animationEditor" style="display: none;">
+                <h3>Animations</h3>
+                <div class="form-group">
+                    <label>Animation Type:</label>
+                    <select id="animationType">
+                        <option value="none">None</option>
+                        <option value="fadeIn">Fade In</option>
+                        <option value="fadeInUp">Fade In Up</option>
+                        <option value="slideInUp">Slide In Up</option>
+                        <option value="bounceIn">Bounce In</option>
+                        <option value="slideInLeft">Slide In Left</option>
+                        <option value="slideInRight">Slide In Right</option>
+                        <option value="pulse">Pulse</option>
+                        <option value="rotateIn">Rotate In</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Animation Duration:</label>
+                    <input type="range" id="animationDuration" min="0.1" max="5" step="0.1" value="1" class="range-input">
+                    <span id="animationDurationValue">1s</span>
+                </div>
+                <div class="form-group">
+                    <label>Animation Delay:</label>
+                    <input type="range" id="animationDelay" min="0" max="3" step="0.1" value="0" class="range-input">
+                    <span id="animationDelayValue">0s</span>
+                </div>
+                <button class="btn" onclick="updateAnimation()">Apply Animation</button>
+            </div>
+
+            <div class="editor-section" id="exportSection" style="display: none;">
+                <h3>Export & Save</h3>
+                <div class="save-options">
+                    <button class="btn btn-success" onclick="saveAsNewFile()">Save as New File</button>
+                    <button class="btn" onclick="copyCompleteHTML()">📋 Copy Complete HTML</button>
+                </div>
+                <button class="btn" onclick="exportPortfolio()">Export Complete HTML</button>
+                <button class="btn btn-secondary" onclick="exportCSS()">Export CSS Only</button>
+                <button class="btn btn-danger" onclick="resetAllStyles()">Reset All Styles</button>
+            </div>
+        </div>
+
+        <div class="preview-area">
+            <div class="element-toolbar" id="elementToolbar" style="display: none;">
+                <div class="element-counter" id="toolbarCounter"></div>
+                <select id="quickElementSelector" onchange="quickSelectElement()">
+                    <option value="">Quick Select...</option>
+                </select>
+            </div>
+            
+            <div class="preview-frame" id="previewFrame">
+                <div class="empty-state">
+                    <h3>🎨 Portfolio Editor</h3>
+                    <p>Upload an HTML file or paste HTML code to get started</p>
+                    <p>Once loaded, you can:</p>
+                    <p>• Click on any element to select it</p>
+                    <p>• Edit content, styles, colors, and animations</p>
+                    <p>• Track HTML, CSS, and JS code changes</p>
+                    <p>• Save as new file or update source file</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedElement = null;
+        let selectedElementIndex = 0;
+        let allElements = [];
+        let originalContent = '';
+        let originalFileName = '';
+        let elementData = {};
+
+        // Initialize the editor
+        function initializeEditor() {
+            setupEventListeners();
+        }
+
+        // Load file
+        function loadFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                originalFileName = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    loadContent(content);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Load from input
+        function loadFromInput() {
+            const content = document.getElementById('htmlInput').value.trim();
+            if (content) {
+                originalFileName = 'portfolio.html';
+                loadContent(content);
+            }
+        }
+
+        // Load content into preview
+        function loadContent(htmlContent) {
+            originalContent = htmlContent;
+            document.getElementById('previewFrame').innerHTML = htmlContent;
+
+            // Wait for DOM to fully render before querying elements
+            setTimeout(() => {
+                try {
+                    updateElementList();
+
+                    // Show editor sections
+                    showEditorSections();
+
+                    // Clear input field
+                    document.getElementById('htmlInput').value = '';
+
+                    showNotification('✅ Content loaded successfully!');
+                } catch (error) {
+                    console.error("Error loading content:", error);
+                    showNotification('⚠️ Failed to parse HTML. Please simplify or check formatting.', 'error');
+                }
+            }, 100); // delay allows rendering
+        }
+
+        // Update element list
+        function updateElementList() {
+            const previewRoot = document.querySelector('#previewFrame');
+            allElements = Array.from(previewRoot.querySelectorAll('*')).filter(el =>
+                !el.closest('.empty-state') &&
+                el.tagName !== 'SCRIPT' &&
+                el.tagName !== 'STYLE'
+            );
+
+            const selector = document.getElementById('elementSelector');
+            const quickSelector = document.getElementById('quickElementSelector');
+
+            selector.innerHTML = '<option value="">Choose an element...</option>';
+            quickSelector.innerHTML = '<option value="">Quick Select...</option>';
+
+            allElements.forEach((el, index) => {
+                const tagName = el.tagName.toLowerCase();
+                
+                // Safe className handling
+                let className = '';
+                if (el.className && typeof el.className === 'string') {
+                    className = '.' + el.className.split(' ').filter(cls => cls.trim()).join('.');
+                } else if (el.className && el.className.baseVal) {
+                    // Handle SVG elements that have className as an object
+                    className = el.className.baseVal ? '.' + el.className.baseVal.split(' ').filter(cls => cls.trim()).join('.') : '';
+                }
+                
+                const id = el.id ? '#' + el.id : '';
+                const text = (el.textContent || '').trim().slice(0, 40);
+                const label = `${tagName}${id}${className} — ${text}`;
+                
+                const option = new Option(label, index);
+                selector.appendChild(option);
+                quickSelector.appendChild(option.cloneNode(true));
+            });
+
+            if (allElements.length === 0) {
+                showNotification("❌ No editable elements found. Try simplifying or checking layout overlap.", "error");
+            }
+
+            updateElementCounter();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            const sliders = ['fontSize', 'margin', 'padding', 'borderRadius', 'width', 'animationDuration', 'animationDelay', 'borderWidth'];
+            sliders.forEach(slider => {
+                const element = document.getElementById(slider);
+                const valueSpan = document.getElementById(slider + 'Value');
+                
+                element.addEventListener('input', function() {
+                    let value = this.value;
+                    let unit = 'px';
+                    
+                    if (slider === 'animationDuration' || slider === 'animationDelay') {
+                        unit = 's';
+                    } else if (slider === 'width') {
+                        unit = '%';
+                    }
+                    
+                    valueSpan.textContent = value + unit;
+                });
+            });
+
+            // Improved click handling for complex nested elements
+            document.getElementById('previewFrame').addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = e.target.closest('div, section, article, h1, h2, h3, p, img, span, a, button, nav, header, footer, main');
+                if (target && !target.classList.contains('empty-state')) {
+                    selectElementByClick(target);
+                }
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Update element counter
+        function updateElementCounter() {
+            const counter = document.getElementById('elementCounter');
+            const toolbarCounter = document.getElementById('toolbarCounter');
+            const text = `${allElements.length} elements found`;
+            
+            counter.textContent = text;
+            toolbarCounter.textContent = text;
+        }
+
+        // Show editor sections
+        function showEditorSections() {
+            const sections = ['elementSelection', 'contentEditor', 'codeViewer', 'styleEditor', 'colorEditor', 'layoutEditor', 'animationEditor', 'exportSection'];
+            sections.forEach(section => {
+                document.getElementById(section).style.display = 'block';
+            });
+            
+            document.getElementById('elementToolbar').style.display = 'block';
+        }
+
+        // Select element
+        function selectElement() {
+            const selector = document.getElementById('elementSelector');
+            const index = parseInt(selector.value);
+            
+            if (!isNaN(index) && allElements[index]) {
+                selectedElement = allElements[index];
+                selectedElementIndex = index;
+                highlightSelectedElement();
+                loadElementProperties();
+                extractElementData();
+            }
+        }
+
+        // Quick select element
+        function quickSelectElement() {
+            const selector = document.getElementById('quickElementSelector');
+            const index = parseInt(selector.value);
+            
+            if (!isNaN(index) && allElements[index]) {
+                selectedElement = allElements[index];
+                selectedElementIndex = index;
+                document.getElementById('elementSelector').value = index;
+                highlightSelectedElement();
+                loadElementProperties();
+                extractElementData();
+            }
+        }
+
+        // Select element by click
+        function selectElementByClick(element) {
+            const index = allElements.indexOf(element);
+            if (index !== -1) {
+                selectedElement = element;
+                selectedElementIndex = index;
+                document.getElementById('elementSelector').value = index;
+                document.getElementById('quickElementSelector').value = index;
+                highlightSelectedElement();
+                loadElementProperties();
+                extractElementData();
+            }
+        }
+
+        // Highlight selected element
+        function highlightSelectedElement() {
+            // Remove previous highlights
+            document.querySelectorAll('.selected-element').forEach(el => {
+                el.classList.remove('selected-element');
+                const info = el.querySelector('.element-info');
+                if (info) info.remove();
+            });
+
+            // Add highlight to selected element
+            if (selectedElement) {
+                selectedElement.classList.add('selected-element');
+                
+                // Add element info
+                const info = document.createElement('div');
+                info.className = 'element-info';
+                info.textContent = selectedElement.tagName.toLowerCase();
+                selectedElement.appendChild(info);
+            }
+        }
+
+        // Extract element data
+        function extractElementData() {
+            if (!selectedElement) return;
+            
+            // Extract basic info
+            const tagName = selectedElement.tagName.toLowerCase();
+            const id = selectedElement.id || 'No ID';
+            const classes = selectedElement.className || 'No classes';
+            const path = getElementPath(selectedElement);
+            
+            // Update element details
+            document.getElementById('elementTag').textContent = tagName;
+            document.getElementById('elementId').textContent = id;
+            document.getElementById('elementClasses').textContent = classes;
+            document.getElementById('elementPath').textContent = path;
+            document.getElementById('elementDetails').style.display = 'block';
+            
+            // Extract content data
+            extractContentData();
+            
+            // Extract code
+            extractCodeData();
+            
+            // Store element data
+            elementData = {
+                element: selectedElement,
+                tagName: tagName,
+                id: id,
+                classes: classes,
+                path: path,
+                originalHTML: selectedElement.outerHTML,
+                originalStyles: selectedElement.style.cssText,
+                computedStyles: window.getComputedStyle(selectedElement)
+            };
+        }
+
+        // Extract content data
+        function extractContentData() {
+            if (!selectedElement) return;
+            
+            const contentFields = document.getElementById('contentFields');
+            contentFields.innerHTML = '';
+            
+            // Text content
+            if (selectedElement.textContent.trim()) {
+                const textField = createContentField('Text Content', 'textarea', selectedElement.textContent);
+                contentFields.appendChild(textField);
+            }
+            
+            // Common attributes
+            const attributes = ['id', 'class', 'src', 'href', 'alt', 'title', 'placeholder'];
+            attributes.forEach(attr => {
+                if (selectedElement.hasAttribute(attr)) {
+                    const value = selectedElement.getAttribute(attr);
+                    if (value) {
+                        const field = createContentField(attr.toUpperCase(), 'input', value);
+                        contentFields.appendChild(field);
+                    }
+                }
+            });
+            
+            // Data attributes
+            Array.from(selectedElement.attributes).forEach(attr => {
+                if (attr.name.startsWith('data-')) {
+                    const field = createContentField(attr.name, 'input', attr.value);
+                    contentFields.appendChild(field);
+                }
+            });
+        }
+
+        // Create content field
+        function createContentField(label, type, value) {
+            const div = document.createElement('div');
+            div.className = 'content-field';
+            
+            const labelEl = document.createElement('label');
+            labelEl.textContent = label;
+            
+            let inputEl;
+            if (type === 'textarea') {
+                inputEl = document.createElement('textarea');
+                inputEl.rows = 3;
+            } else {
+                inputEl = document.createElement('input');
+                inputEl.type = 'text';
+            }
+            inputEl.value = value;
+            inputEl.setAttribute('data-field', label.toLowerCase().replace(/\s+/g, '-'));
+            
+            div.appendChild(labelEl);
+            div.appendChild(inputEl);
+            
+            return div;
+        }
+
+        // Extract code data
+        function extractCodeData() {
+            if (!selectedElement) return;
+            
+            // Extract HTML
+            const htmlContent = selectedElement.outerHTML;
+            document.getElementById('htmlCodeContent').textContent = formatHTML(htmlContent);
+            
+            // Extract CSS
+            const cssContent = extractElementCSS(selectedElement);
+            document.getElementById('cssCodeContent').textContent = cssContent;
+            
+            // Extract JavaScript
+            const jsContent = extractElementJS(selectedElement);
+            document.getElementById('jsCodeContent').textContent = jsContent;
+        }
+
+        // Format HTML
+        function formatHTML(html) {
+            const formatted = html.replace(/></g, '>\n<');
+            return formatted;
+        }
+
+        // Extract element CSS
+        function extractElementCSS(element) {
+            let css = '';
+            
+            // Inline styles
+            if (element.style.cssText) {
+                css += `/* Inline Styles */\n`;
+                css += `${element.tagName.toLowerCase()}${element.id ? '#' + element.id : ''}${element.className ? '.' + element.className.split(' ').join('.') : ''} {\n`;
+                css += `  ${element.style.cssText}\n`;
+                css += `}\n\n`;
+            }
+            
+            // Computed styles (most important ones)
+            const computedStyles = window.getComputedStyle(element);
+            const importantStyles = ['display', 'position', 'width', 'height', 'margin', 'padding', 'border', 'background', 'color', 'font-size', 'font-weight', 'text-align'];
+            
+            css += `/* Computed Styles */\n`;
+            css += `${element.tagName.toLowerCase()}${element.id ? '#' + element.id : ''}${element.className ? '.' + element.className.split(' ').join('.') : ''} {\n`;
+            
+            importantStyles.forEach(prop => {
+                const value = computedStyles.getPropertyValue(prop);
+                if (value && value !== 'none' && value !== 'auto') {
+                    css += `  ${prop}: ${value};\n`;
+                }
+            });
+            
+            css += `}\n`;
+            
+            return css || '/* No CSS styles found */';
+        }
+
+        // Extract element JavaScript
+        function extractElementJS(element) {
+            let js = '';
+            
+            // Event listeners
+            const events = ['onclick', 'onmouseover', 'onmouseout', 'onchange', 'onsubmit', 'onload'];
+            events.forEach(event => {
+                if (element.hasAttribute(event)) {
+                    js += `// ${event} event\n`;
+                    js += `${element.getAttribute(event)}\n\n`;
+                }
+            });
+            
+            // Data attributes that might contain JS
+            Array.from(element.attributes).forEach(attr => {
+                if (attr.name.startsWith('data-') && attr.value.includes('function')) {
+                    js += `// ${attr.name}\n`;
+                    js += `${attr.value}\n\n`;
+                }
+            });
+            
+            return js || '/* No JavaScript found */';
+        }
+
+        // Get element path
+        function getElementPath(element) {
+            const path = [];
+            let current = element;
+            
+            while (current && current !== document.getElementById('previewFrame')) {
+                let selector = current.tagName.toLowerCase();
+                
+                if (current.id) {
+                    selector += '#' + current.id;
+                } else if (current.className) {
+                    selector += '.' + current.className.split(' ').join('.');
+                } else {
+                    const siblings = Array.from(current.parentNode.children).filter(child => child.tagName === current.tagName);
+                    if (siblings.length > 1) {
+                        const index = siblings.indexOf(current) + 1;
+                        selector += `:nth-child(${index})`;
+                    }
+                }
+                
+                path.unshift(selector);
+                current = current.parentNode;
+            }
+            
+            return path.join(' > ');
+        }
+
+        // Load element properties
+        function loadElementProperties() {
+            if (!selectedElement) return;
+            
+            const computedStyles = window.getComputedStyle(selectedElement);
+            
+            // Typography
+            document.getElementById('fontSize').value = parseInt(computedStyles.fontSize);
+            document.getElementById('fontSizeValue').textContent = computedStyles.fontSize;
+            document.getElementById('fontWeight').value = computedStyles.fontWeight;
+            document.getElementById('textAlign').value = computedStyles.textAlign;
+            
+            // Colors
+            document.getElementById('textColor').value = rgbToHex(computedStyles.color);
+            document.getElementById('backgroundColor').value = rgbToHex(computedStyles.backgroundColor);
+            document.getElementById('borderColor').value = rgbToHex(computedStyles.borderColor);
+            
+            // Layout
+            document.getElementById('margin').value = parseInt(computedStyles.margin) || 0;
+            document.getElementById('marginValue').textContent = computedStyles.margin;
+            document.getElementById('padding').value = parseInt(computedStyles.padding) || 0;
+            document.getElementById('paddingValue').textContent = computedStyles.padding;
+            document.getElementById('borderRadius').value = parseInt(computedStyles.borderRadius) || 0;
+            document.getElementById('borderRadiusValue').textContent = computedStyles.borderRadius;
+            document.getElementById('borderWidth').value = parseInt(computedStyles.borderWidth) || 0;
+            document.getElementById('borderWidthValue').textContent = computedStyles.borderWidth;
+            document.getElementById('display').value = computedStyles.display;
+            
+            // Width
+            const widthPercent = selectedElement.style.width ? parseInt(selectedElement.style.width) : 100;
+            document.getElementById('width').value = widthPercent;
+            document.getElementById('widthValue').textContent = widthPercent + '%';
+        }
+
+        // RGB to Hex conversion
+        function rgbToHex(rgb) {
+            if (rgb.includes('rgb')) {
+                const matches = rgb.match(/\d+/g);
+                if (matches && matches.length >= 3) {
+                    const r = parseInt(matches[0]).toString(16).padStart(2, '0');
+                    const g = parseInt(matches[1]).toString(16).padStart(2, '0');
+                    const b = parseInt(matches[2]).toString(16).padStart(2, '0');
+                    return '#' + r + g + b;
+                }
+            }
+            return '#000000';
+        }
+
+        // Update element content
+        function updateElementContent() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const contentFields = document.querySelectorAll('#contentFields input, #contentFields textarea');
+            
+            contentFields.forEach(field => {
+                const fieldName = field.getAttribute('data-field');
+                const value = field.value;
+                
+                if (fieldName === 'text-content') {
+                    selectedElement.textContent = value;
+                } else if (fieldName === 'id') {
+                    selectedElement.id = value;
+                } else if (fieldName === 'class') {
+                    selectedElement.className = value;
+                } else if (fieldName === 'src') {
+                    selectedElement.src = value;
+                } else if (fieldName === 'href') {
+                    selectedElement.href = value;
+                } else if (fieldName === 'alt') {
+                    selectedElement.alt = value;
+                } else if (fieldName === 'title') {
+                    selectedElement.title = value;
+                } else if (fieldName === 'placeholder') {
+                    selectedElement.placeholder = value;
+                } else if (fieldName.startsWith('data-')) {
+                    selectedElement.setAttribute(fieldName, value);
+                }
+            });
+            
+            // Update element list and code view
+            updateElementList();
+            extractCodeData();
+            
+            showNotification('Element content updated successfully!');
+        }
+
+        // Duplicate element
+        function duplicateElement() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const clone = selectedElement.cloneNode(true);
+            
+            // Update ID if it exists
+            if (clone.id) {
+                clone.id = clone.id + '_copy';
+            }
+            
+            // Insert after the original element
+            selectedElement.parentNode.insertBefore(clone, selectedElement.nextSibling);
+            
+            // Update element list
+            updateElementList();
+            
+            showNotification('Element duplicated successfully!');
+        }
+
+        // Delete element
+        function deleteElement() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const elementInfo = `${selectedElement.tagName.toLowerCase()}${selectedElement.id ? '#' + selectedElement.id : ''}`;
+            
+            if (confirm(`Are you sure you want to delete the element "${elementInfo}"? This action cannot be undone.`)) {
+                // Store parent for potential updates
+                const parent = selectedElement.parentNode;
+                
+                // Remove the element from DOM
+                selectedElement.remove();
+                
+                // Clear selection
+                selectedElement = null;
+                selectedElementIndex = 0;
+                
+                // Hide element details
+                document.getElementById('elementDetails').style.display = 'none';
+                
+                // Clear content fields
+                document.getElementById('contentFields').innerHTML = '';
+                
+                // Clear code sections
+                document.getElementById('htmlCodeContent').textContent = 'No element selected';
+                document.getElementById('cssCodeContent').textContent = 'No element selected';
+                document.getElementById('jsCodeContent').textContent = 'No element selected';
+                
+                // Reset selectors
+                document.getElementById('elementSelector').value = '';
+                document.getElementById('quickElementSelector').value = '';
+                
+                // Update element list to reflect the deletion
+                updateElementList();
+                
+                showNotification(`Element "${elementInfo}" deleted successfully!`);
+            }
+        }
+
+        // Update typography
+        function updateTypography() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const fontSize = document.getElementById('fontSize').value + 'px';
+            const fontWeight = document.getElementById('fontWeight').value;
+            const textAlign = document.getElementById('textAlign').value;
+            
+            selectedElement.style.fontSize = fontSize;
+            selectedElement.style.fontWeight = fontWeight;
+            selectedElement.style.textAlign = textAlign;
+            
+            extractCodeData();
+            showNotification('Typography updated successfully!');
+        }
+
+        // Update colors
+        function updateColors() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const textColor = document.getElementById('textColor').value;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const borderColor = document.getElementById('borderColor').value;
+            const borderWidth = document.getElementById('borderWidth').value + 'px';
+            
+            selectedElement.style.color = textColor;
+            selectedElement.style.backgroundColor = backgroundColor;
+            selectedElement.style.borderColor = borderColor;
+            selectedElement.style.borderWidth = borderWidth;
+            selectedElement.style.borderStyle = 'solid';
+            
+            extractCodeData();
+            showNotification('Colors updated successfully!');
+        }
+
+        // Update layout
+        function updateLayout() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const margin = document.getElementById('margin').value + 'px';
+            const padding = document.getElementById('padding').value + 'px';
+            const borderRadius = document.getElementById('borderRadius').value + 'px';
+            const width = document.getElementById('width').value + '%';
+            const display = document.getElementById('display').value;
+            
+            selectedElement.style.margin = margin;
+            selectedElement.style.padding = padding;
+            selectedElement.style.borderRadius = borderRadius;
+            selectedElement.style.width = width;
+            selectedElement.style.display = display;
+            
+            extractCodeData();
+            showNotification('Layout updated successfully!');
+        }
+
+        // Update animation
+        function updateAnimation() {
+            if (!selectedElement) {
+                showNotification('No element selected', 'error');
+                return;
+            }
+            
+            const animationType = document.getElementById('animationType').value;
+            const animationDuration = document.getElementById('animationDuration').value + 's';
+            const animationDelay = document.getElementById('animationDelay').value + 's';
+            
+            // Remove existing animation classes
+            selectedElement.classList.remove('animation-fadeIn', 'animation-fadeInUp', 'animation-slideInUp', 'animation-bounceIn', 'animation-slideInLeft', 'animation-slideInRight', 'animation-pulse', 'animation-rotateIn');
+            
+            if (animationType !== 'none') {
+                selectedElement.classList.add('animation-' + animationType);
+                selectedElement.style.animationDuration = animationDuration;
+                selectedElement.style.animationDelay = animationDelay;
+            }
+            
+            extractCodeData();
+            showNotification('Animation updated successfully!');
+        }
+
+        // Export complete portfolio
+        function exportPortfolio() {
+            const previewContent = document.getElementById('previewFrame').innerHTML;
+            const styles = document.querySelector('style').innerHTML;
+            
+            const completeHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        ${styles}
+    </style>
+</head>
+<body>
+    ${previewContent}
+</body>
+</html>`;
+            
+            downloadFile(completeHTML, 'portfolio_complete.html');
+        }
+
+        // Export CSS only
+        function exportCSS() {
+            const styles = document.querySelector('style').innerHTML;
+            downloadFile(styles, 'portfolio_styles.css');
+        }
+
+        // Save as new file
+        function saveAsNewFile() {
+            const previewContent = document.getElementById('previewFrame').innerHTML;
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            const filename = `portfolio_${timestamp}.html`;
+            
+            downloadFile(previewContent, filename);
+        }
+
+        // Download file
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification(`File ${filename} downloaded successfully!`);
+        }
+
+        // Copy complete HTML to clipboard
+        function copyCompleteHTML() {
+            const previewContent = document.getElementById('previewFrame').innerHTML;
+            const styles = document.querySelector('style').innerHTML;
+            
+            const completeHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        ${styles}
+    </style>
+</head>
+<body>
+    ${previewContent}
+</body>
+</html>`;
+            
+            // Try to copy to clipboard
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(completeHTML).then(() => {
+                    showNotification('📋 Complete HTML copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    fallbackCopyToClipboard(completeHTML);
+                });
+            } else {
+                fallbackCopyToClipboard(completeHTML);
+            }
+        }
+
+        // Fallback copy method for older browsers
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('📋 Complete HTML copied to clipboard!');
+                } else {
+                    showNotification('❌ Failed to copy. Please manually select and copy.', 'error');
+                }
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                showNotification('❌ Copy not supported. Please manually select and copy.', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // Reset all styles
+        function resetAllStyles() {
+            if (confirm('Are you sure you want to reset all styles? This action cannot be undone.')) {
+                const elements = document.querySelectorAll('#previewFrame *');
+                elements.forEach(el => {
+                    el.removeAttribute('style');
+                    el.classList.remove('animation-fadeIn', 'animation-fadeInUp', 'animation-slideInUp', 'animation-bounceIn', 'animation-slideInLeft', 'animation-slideInRight', 'animation-pulse', 'animation-rotateIn');
+                });
+                
+                extractCodeData();
+                showNotification('All styles reset successfully!');
+            }
+        }
+
+        // Clear all content
+        function clearContent() {
+            if (confirm('Are you sure you want to clear all content?')) {
+                document.getElementById('previewFrame').innerHTML = `
+                    <div class="empty-state">
+                        <h3>🎨 Portfolio Editor</h3>
+                        <p>Upload an HTML file or paste HTML code to get started</p>
+                        <p>Once loaded, you can:</p>
+                        <p>• Click on any element to select it</p>
+                        <p>• Edit content, styles, colors, and animations</p>
+                        <p>• Track HTML, CSS, and JS code changes</p>
+                        <p>• Save as new file or update source file</p>
+                    </div>
+                `;
+                
+                // Hide editor sections
+                const sections = ['elementSelection', 'contentEditor', 'codeViewer', 'styleEditor', 'colorEditor', 'layoutEditor', 'animationEditor', 'exportSection'];
+                sections.forEach(section => {
+                    document.getElementById(section).style.display = 'none';
+                });
+                
+                document.getElementById('elementToolbar').style.display = 'none';
+                
+                selectedElement = null;
+                selectedElementIndex = 0;
+                allElements = [];
+                originalContent = '';
+                originalFileName = '';
+                elementData = {};
+                
+                showNotification('Content cleared successfully!');
+            }
+        }
+
+        // Initialize the editor when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditor();
+        });
+    </script>
+</body>
+</html>
