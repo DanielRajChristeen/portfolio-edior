@@ -70,7 +70,7 @@ A powerful web-based HTML portfolio editor with live preview, drag-and-drop func
 ## 🚀 Getting Started
 
 ### Option 1: Use Online
-Visit the [live demo](https://danielrajchristeen.github.io/portfolio-editor/) and start editing immediately.
+Visit the [live demo]([https://danielrajchristeen.github.io/portfolio-editor/]) and start editing immediately.
 
 ### Option 2: Download and Use Locally
 1. Download the `index.html` file
