@@ -70,7 +70,7 @@ A powerful web-based HTML portfolio editor with live preview, drag-and-drop func
 ## 🚀 Getting Started
 
 ### Option 1: Use Online
-Visit the [live demo]([https://danielrajchristeen.github.io/portfolio-editor/]) and start editing immediately.
+Visit the [live demo](https://danielrajchristeen.github.io/portfolio-edior/) and start editing immediately.
 
 ### Option 2: Download and Use Locally
 1. Download the `index.html` file
@@ -116,7 +116,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [Live Demo](https://danielrajchristeen.github.io/portfolio-editor/)
+- [Live Demo](https://danielrajchristeen.github.io/portfolio-edior/)
 - [Report Bug](https://github.com/DanielRajChristeen/portfolio-editor/issues)
 - [Request Feature](https://github.com/DanielRajChristeen/portfolio-editor/issues)
 
