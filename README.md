@@ -83,8 +83,7 @@ Visit the [live demo](https://danielrajchristeen.github.io/portfolio-edior/) and
 3. Access your personal copy at `https://yourusername.github.io/portfolio-editor/`
 
 ## 📸 Screenshots
-
-*Add screenshots here showing the editor interface, element selection, and styling options*
+![Screenshot](Screenshot.jpeg)
 
 ## 🤝 Contributing
 
