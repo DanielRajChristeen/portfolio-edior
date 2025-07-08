@@ -1,8 +1,8 @@
-# Portfolio Editor
+<h1>Portfolio Editor</h1>
 
-![Screenshot](Screenshot.jpeg)
+<img src="sample.gif" alt="Demo" style="width:100%; display:block;" />
 
-A powerful web-based HTML portfolio editor with live preview, drag-and-drop functionality, and comprehensive styling tools.
+  A powerful web-based HTML portfolio editor with live preview, drag-and-drop functionality, and comprehensive styling tools.
 
 ## 🚀 Live Demo
 
