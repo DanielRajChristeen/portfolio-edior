@@ -6,7 +6,7 @@ A powerful and intuitive web-based HTML portfolio editor designed for developers
 
 ## 🚀 Live Demo
 
-**[Try the Portfolio Editor](https://danielrajchristeen.github.io/portfolio-editor/)**
+**[Try the Portfolio Editor](https://danielrajchristeen.github.io/portfolio-edior/)**
 
 ## ✨ Features
 
