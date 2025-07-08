@@ -1,5 +1,7 @@
 # Portfolio Editor
 
+![Screenshot](Screenshot.jpeg)
+
 A powerful web-based HTML portfolio editor with live preview, drag-and-drop functionality, and comprehensive styling tools.
 
 ## 🚀 Live Demo
@@ -81,9 +83,6 @@ Visit the [live demo](https://danielrajchristeen.github.io/portfolio-edior/) and
 1. Fork this repository
 2. Enable GitHub Pages in your fork
 3. Access your personal copy at `https://yourusername.github.io/portfolio-editor/`
-
-## 📸 Screenshots
-![Screenshot](Screenshot.jpeg)
 
 ## 🤝 Contributing
 
