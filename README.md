@@ -1,7 +1,5 @@
 <h1>Portfolio Editor</h1>
 
-<video src="sample_video.mp4" autoplay loop muted style="width: 100vw;"></video>
-
 <img src="sample.gif" alt="Demo" style="width:100%; display:block;" />
 
   A powerful web-based HTML portfolio editor with live preview, drag-and-drop functionality, and comprehensive styling tools.
