@@ -2,7 +2,7 @@
 
 <img src="sample.gif" alt="Demo" style="width:100%; display:block;" />
 
-  A powerful web-based HTML portfolio editor with live preview, drag-and-drop functionality, and comprehensive styling tools.
+A powerful and intuitive web-based HTML portfolio editor designed for developers, designers, and students. This tool enables seamless editing of portfolio templates through a real-time preview interface, interactive drag-and-drop functionality, and a rich set of styling controls — all without writing a single line of code. Users can visually customize layout, content, and design elements with precision, edit HTML and CSS attributes instantly, and export fully functional HTML files for deployment. Whether you're creating a personal portfolio, showcasing projects, or prototyping ideas, this editor streamlines the entire process with a user-friendly, browser-based interface that works across all platforms.
 
 ## 🚀 Live Demo
 
